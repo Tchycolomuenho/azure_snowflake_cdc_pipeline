@@ -1,0 +1,14 @@
+azure_snowflake_cdc_pipeline:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: "<account>"
+      user: "<user>"
+      password: "<password>"
+      role: "ANALYST"
+      warehouse: "ANALYTICS_WH"
+      database: "ANALYTICS"
+      schema: "DW"
+      threads: 4
+      client_session_keep_alive: false

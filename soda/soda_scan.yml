@@ -1,0 +1,13 @@
+checks for dw.fct_transactions:
+  - row_count > 0
+  - freshness(event_ts) < 1d
+  - duplicate_count(transaction_id) = 0
+  - failed_rows:
+      name: high_value_requires_pci_role
+      fail condition: amount > 10000 AND CURRENT_ROLE() NOT IN ('PCI_READER','ACCOUNTADMIN')
+
+checks for dw.dim_customers_scd2:
+  - missing_count(customer_id) = 0
+  - invalid_email:
+      name: valid_email_format
+      fail condition: NOT email RLIKE '^[^@]+@[^@]+\.[^@]+$'

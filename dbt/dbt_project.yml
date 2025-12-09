@@ -1,0 +1,25 @@
+name: 'azure_snowflake_cdc_pipeline'
+version: '1.0.0'
+config-version: 2
+profile: 'azure_snowflake_cdc_pipeline'
+
+model-paths: ['models']
+snapshot-paths: ['snapshots']
+macro-paths: ['macros']
+
+models:
+  azure_snowflake_cdc_pipeline:
+    +materialized: view
+    staging:
+      +schema: raw
+      +database: RAW
+      +materialized: incremental
+    warehouse:
+      +schema: DW
+      +database: ANALYTICS
+      +materialized: table
+
+snapshots:
+  azure_snowflake_cdc_pipeline:
+    +database: ANALYTICS
+    +schema: SNAPSHOTS

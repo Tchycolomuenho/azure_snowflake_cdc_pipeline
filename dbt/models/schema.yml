@@ -1,0 +1,72 @@
+version: 2
+
+sources:
+  - name: raw
+    database: RAW
+    schema: STREAMING
+    tables:
+      - name: transactions
+      - name: customers
+      - name: cards
+
+models:
+  - name: stg_transactions
+    description: "Transações preparadas a partir de RAW.STREAMING.TRANSACTIONS"
+    columns:
+      - name: transaction_id
+        tests: [not_null, unique]
+      - name: card_id
+        tests: [not_null]
+  - name: stg_customers
+    columns:
+      - name: customer_id
+        tests: [not_null, unique]
+      - name: email
+        tests:
+          - not_null
+  - name: stg_cards
+    columns:
+      - name: card_id
+        tests: [not_null, unique]
+
+  - name: dim_customers_scd2
+    description: "Dimensão de clientes com histórico SCD Type 2 (via snapshots dbt)."
+    columns:
+      - name: customer_id
+        tests: [not_null]
+      - name: is_current
+        tests:
+          - accepted_values:
+              values: [true, false]
+
+  - name: dim_cards_scd2
+    description: "Dimensão de cartões com histórico SCD Type 2 (via snapshots dbt)."
+    columns:
+      - name: card_id
+        tests: [not_null]
+      - name: is_current
+        tests:
+          - accepted_values:
+              values: [true, false]
+
+  - name: fct_transactions
+    description: "Fato de transações, ligado às dimensões vigentes no momento da transação."
+    columns:
+      - name: transaction_id
+        tests: [not_null, unique]
+      - name: processed_at
+        tests: [not_null]
+
+exposures:
+  - name: power_bi_certified_views
+    type: dashboard
+    maturity: high
+    url: https://app.powerbi.com/
+    description: Dashboards certificados consumindo views de fatos/dimensões.
+    depends_on:
+      - ref('fct_transactions')
+      - ref('dim_customers_scd2')
+      - ref('dim_cards_scd2')
+    owner:
+      name: Data Platform
+      email: data@example.com

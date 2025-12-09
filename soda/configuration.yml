@@ -1,0 +1,9 @@
+data_source snowflake:
+  type: snowflake
+  account: ${SNOWFLAKE_ACCOUNT}
+  username: ${SNOWFLAKE_USER}
+  password: ${SNOWFLAKE_PASSWORD}
+  role: ANALYST
+  warehouse: ANALYTICS_WH
+  database: ANALYTICS
+  schema: DW

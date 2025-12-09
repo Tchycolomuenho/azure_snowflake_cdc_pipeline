@@ -1,0 +1,55 @@
+{
+  "name": "pl_cdc_sqlserver_to_bronze",
+  "properties": {
+    "description": "Copy CDC changes from SQL Server to Azure Storage (landing) partitioned by table/date.",
+    "activities": [
+      {
+        "name": "CDC_Copy",
+        "type": "Copy",
+        "dependsOn": [],
+        "typeProperties": {
+          "source": {
+            "type": "SqlServerSource",
+            "sqlReaderQuery": "SELECT * FROM cdc.fn_cdc_get_net_changes_$(schema_table) (@start_lsn, @end_lsn, 'all')"
+          },
+          "sink": {
+            "type": "ParquetSink",
+            "storeSettings": {
+              "type": "AzureBlobStorageWriteSettings",
+              "maxConcurrentConnections": 4
+            },
+            "formatSettings": {
+              "type": "ParquetWriteSettings",
+              "fileNamePrefix": "${schema_table}/dt=${formatDateTime(utcNow(),'yyyyMMdd')}/"
+            }
+          },
+          "enableStaging": false
+        },
+        "inputs": [
+          {
+            "referenceName": "ds_sqlserver_cdc",
+            "type": "DatasetReference"
+          }
+        ],
+        "outputs": [
+          {
+            "referenceName": "ds_landing_parquet",
+            "type": "DatasetReference"
+          }
+        ]
+      }
+    ],
+    "parameters": {
+      "schema_table": {
+        "type": "String"
+      },
+      "start_lsn": {
+        "type": "String"
+      },
+      "end_lsn": {
+        "type": "String"
+      }
+    },
+    "annotations": ["cdc", "sqlserver", "snowflake"]
+  }
+}
