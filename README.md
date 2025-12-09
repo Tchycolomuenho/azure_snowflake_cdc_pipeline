@@ -1,38 +1,69 @@
 # Azure → Snowflake CDC Pipeline with Airflow
 
-Projeto de referência para ingestão CDC de um SQL Server transacional para Snowflake usando Airflow para orquestração. Inclui geração de dados simulados, ADF para captura/aterragem, modelagem com dbt (SCD Type 2), qualidade com Soda SQL, políticas de segurança (RLS/masking), provisionamento com Terraform/Bicep e observabilidade com OpenTelemetry + Datadog.
+Project demonstrating a full CDC ingestion pipeline from a transactional SQL Server into Snowflake, using Airflow for orchestration. Includes simulated data generation, ADF for capture/landing, dbt modeling (SCD Type 2), data quality with Soda SQL, Snowflake security policies (RLS/masking), infrastructure provisioning via Terraform/Bicep, and observability with OpenTelemetry + Datadog.
 
-## Escopo
-- Fonte: SQL Server com CDC habilitado nas tabelas `transactions`, `customers` e `cards`.
-- Orquestração: Airflow acionando pipelines ADF para aterrar dados em estágio Snowflake (External Stage + Snowpipe/Copy via ADF).
-- Camada analítica: dbt-snowflake com modelos SCD2 (clientes/cartões) e fato incremental (transações) usando Streams+Tasks para MERGE.
-- Governança: qualidade de dados com Soda SQL, RLS/masking policies em Snowflake, views certificadas para consumo (Power BI).
-- Infra: Terraform/Bicep para provisionar ADF, Key Vault, Storage, Snowflake roles/warehouses; observabilidade com OpenTelemetry + Datadog.
+## Scope
+- Source: SQL Server with CDC enabled on the `transactions`, `customers`, and `cards` tables.
+- Orchestration: Airflow triggering ADF pipelines to land data into Snowflake staging (External Stage + Snowpipe/Copy via ADF).
+- Analytics layer: dbt-snowflake with SCD2 models (customers/cards) and an incremental fact model (transactions) using Streams + Tasks for MERGE operations.
+- Governance: Data quality with Soda SQL, Snowflake RLS/masking policies, and certified views for BI consumption (Power BI).
+- Infrastructure: Terraform/Bicep provisioning for ADF, Key Vault, Storage, Snowflake roles/warehouses; observability with OpenTelemetry + Datadog.
 
-## Como navegar
-- `data/`: scripts SQL para gerar dados simulados (inserts/updates) em SQL Server.
-- `airflow/dags/`: DAG com tarefas para orquestrar CDC via ADF e pós-processamento em Snowflake.
-- `adf/`: blueprint de pipelines/datasets/triggers CDC.
-- `dbt/`: modelos dbt e documentação de SCD2/streams/tasks.
-- `snowflake/`: scripts de criação de streams, tasks, RLS/masking policies e views certificadas.
-- `soda/`: configuração de checagens de qualidade.
-- `terraform/` e `bicep/`: exemplos de provisionamento.
-- `observability/`: guia de telemetria com OpenTelemetry + Datadog.
+## How to Navigate
+- `data/`: SQL scripts to generate simulated inserts/updates in SQL Server.
+- `airflow/dags/`: Airflow DAG orchestrating CDC ingestion via ADF and post-processing in Snowflake.
+- `adf/`: Blueprint for ADF pipelines, datasets, and CDC triggers.
+- `dbt/`: dbt models and documentation for SCD2, streams, and tasks.
+- `snowflake/`: Scripts to create streams, tasks, RLS/masking policies, and certified views.
+- `soda/`: Soda SQL configuration for data-quality checks.
+- `terraform/` and `bicep/`: Infrastructure provisioning examples for Azure and Snowflake.
+- `observability/`: Telemetry guide with OpenTelemetry + Datadog.
 
-## Fluxo resumido
-1. CDC habilitado no SQL Server captura alterações nas tabelas fonte.
-2. Airflow agenda execução do ADF Copy (ou Mapping Data Flow) lendo alterações via CDC e escrevendo em Azure Storage (parquet) + notificação para Snowpipe.
-3. A Snowpipe/ADF copia para o stage Snowflake; streams capturam deltas e tasks executam MERGE/INSERT conforme modelagem (arquivo `snowflake/tasks_and_streams.sql`).
-4. dbt executa snapshots (SCD2 para clientes/cartões) e modelos incrementais; Soda SQL valida qualidade; Snowflake aplica RLS/masking; Power BI consome views certificadas.
+## Pipeline Summary
+1. SQL Server CDC captures changes from the source tables.
+2. Airflow triggers ADF Copy (or Mapping Data Flow) to extract CDC deltas and land the data in Azure Storage (parquet), notifying Snowpipe.
+3. Snowpipe/ADF loads data into Snowflake staging; Streams capture deltas and Tasks execute the MERGE/INSERT logic.
+4. dbt runs SCD2 snapshots and incremental models; Soda SQL validates data quality; Snowflake enforces RLS/masking; Power BI consumes certified views.
 
-## Como validar localmente
-- `snowflake/tasks_and_streams.sql`: execute o script para criar stages/streams/tasks/tabelas no Snowflake. As tasks são retomadas ao final do script.
-- Airflow: copie `airflow/dags/cdc_sqlserver_to_snowflake.py` para o diretório de DAGs **mantendo a estrutura do repositório em um nível acima** (ex.: `/opt/airflow/dags/azure_snowflake_cdc_pipeline/airflow/dags/cdc_sqlserver_to_snowflake.py`), pois o DAG resolve caminhos relativos para `dbt/`, `soda/` e `snowflake/`. Configure conexões `adf_api`, `adf_default` e `snowflake_default`; acione o DAG manualmente para testar a cadeia ADF → Snowflake → dbt → Soda.
-- dbt: na pasta `dbt/`, copie `profiles.yml.example` para `profiles.yml`, ajuste credenciais e rode `dbt deps && dbt snapshot && dbt run --select staging warehouse`.
-- Soda: na pasta `soda/`, ajuste variáveis de ambiente `SNOWFLAKE_*` e rode `soda scan -d snowflake -c configuration.yml soda_scan.yml`.
-- Sanidade rápida: `python -m compileall azure_snowflake_cdc_pipeline` garante que o DAG e arquivos Python compilam corretamente no ambiente.
+## Local Validation
 
-## Premissas
-- Exemplos são auto-contidos e não requerem credenciais reais.
-- Use variáveis de ambiente/Key Vault para segredos (não versionar chaves).
-- Ajuste nomes de warehouses/databases conforme seu tenant.
+### Snowflake
+- Run `snowflake/tasks_and_streams.sql` to create stages, streams, tasks, and tables.
+- Tasks are resumed automatically at the end of the script.
+
+### Airflow
+- Copy `airflow/dags/cdc_sqlserver_to_snowflake.py` into your Airflow DAGs directory, keeping the repository structure one level above, such as:
+  `/opt/airflow/dags/azure_snowflake_cdc_pipeline/airflow/dags/cdc_sqlserver_to_snowflake.py`
+  This ensures the DAG resolves relative paths to `dbt/`, `soda/`, and `snowflake/`.
+
+- Configure the following Airflow connections:
+  - `adf_api`
+  - `adf_default`
+  - `snowflake_default`
+
+- Trigger the DAG manually to validate the ADF → Snowflake → dbt → Soda flow.
+
+### dbt
+Inside the `dbt/` directory:
+- Copy `profiles.yml.example` to `profiles.yml` and update credentials.
+- Run:
+dbt deps
+dbt snapshot
+dbt run --select staging warehouse
+
+### Soda
+Inside the `soda/` directory:
+- Set Snowflake environment variables (`SNOWFLAKE_*`).
+- Run:
+soda scan -d snowflake -c configuration.yml soda_scan.yml
+
+### Sanity Check
+Run from the repository root:
+python -m compileall azure_snowflake_cdc_pipeline
+
+This ensures the DAG and Python modules compile without errors.
+
+## Assumptions
+- Examples are self-contained and do not require real credentials.
+- Secrets must be stored in environment variables or Azure Key Vault (never committed).
+- Warehouse and database names should be adjusted according to your Snowflake tenant.
